@@ -37,7 +37,7 @@ uint16_t g_udpserver_ipv6[8] =
 };
 
 
-int udp_write(){
+int udp_br_write(){
   //Get IP and destination port
   struct sockaddr_in6 server;
 
@@ -123,7 +123,6 @@ int udp_write(){
     printf("Sending %i characters: %s \n\n",strlen(buffer),buffer);
     sendto(sockfd, buffer, strlen(buffer), 0,
                     (struct sockaddr*)&server, addrlen);
-    break;                    
   }
 
 

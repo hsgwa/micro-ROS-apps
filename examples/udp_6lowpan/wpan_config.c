@@ -9,7 +9,8 @@ void lowpan_configuration() {
   if (strcmp("c", buffer) == 0) {
     // Set coordinator
     system("i8sak wpan0 startpan cd:ab");
-    system("i8sak set chan 26");
+ //   system("i8sak set chan 26");
+    system("i8sak set chan 11");
     sleep(1);
     printf("Choose your ID (00 to FF)\n\n");
     scanf("%s", buffer);
@@ -27,7 +28,8 @@ void lowpan_configuration() {
   } else if (strcmp("n", buffer) == 0) {
     // Set node
     system("i8sak wpan0");
-    system("i8sak set chan 26");
+//    system("i8sak set chan 26");
+    system("i8sak set chan 11");
     system("i8sak set panid cd:ab");
     sleep(1);
     printf("Choose your ID (00 to FF)\n\n");
