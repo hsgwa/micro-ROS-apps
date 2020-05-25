@@ -56,6 +56,7 @@ int ucs_pub_main(int argc, char* argv[])
     else {
         strcpy(topic_name, PUB_EFFECTOR_TOPIC);
     }
+    printf("device ID - %d, nOde - %s, topic - %s \n", PUB_DEVICE_ID, node_name, topic_name );
 
     rcl_ret_t rv;
 

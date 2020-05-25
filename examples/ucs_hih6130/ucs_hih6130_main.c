@@ -52,6 +52,7 @@ int ucs_hih6130_main(int argc, char* argv[])
     strcpy(inet6_address, HIH_AGENT_INET6_ADDR);
     strcpy(node_name, HIH_NODE);
     strcpy(topic_name, HIH_TOPIC);
+    printf("device ID - %d, nOde - %s, topic - %s \n", HIH_DEVICE_ID, node_name, topic_name );
 
     rcl_ret_t rv;
 

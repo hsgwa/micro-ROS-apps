@@ -1,6 +1,5 @@
 #include <nuttx/config.h>
 #include <nuttx/ioexpander/gpio.h>
-// #include <nuttx/sensors/hih6130.h>
 #include <fcntl.h>
 
 #include <stdio.h>
@@ -93,6 +92,7 @@ int ucs_effector_main(int argc, char* argv[])
     strcpy(inet6_address, EFFECTOR_AGENT_INET6_ADDR);
     strcpy(node_name, EFFECTOR_NODE);
     strcpy(topic_name, EFFECTOR_TOPIC);
+    printf("device ID - %d, nOde - %s, topic - %s \n", EFFECTOR_PAN_ID, node_name, topic_name );
 
     rcl_ret_t rv;
 
