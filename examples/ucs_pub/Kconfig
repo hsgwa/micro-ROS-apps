@@ -1,9 +1,9 @@
 config UCS_PUB_EXAMPLE
-	bool "UCS demo - microROS Opener/Effector Publisher over 6LoWPAN"
+	bool "UCS - microROS Opener/Effector Publisher over 6LoWPAN"
 	default n
 	depends on UROS
 	---help---
-		Enable the ucs demo publisher example over 6LoWPAN radio communication
+		Enable the ucs test publisher over 6LoWPAN radio communication
 
 if UCS_PUB_EXAMPLE
 

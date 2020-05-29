@@ -10,9 +10,6 @@
 #include <std_msgs/msg/int32.h>
 #include <rmw_uros/options.h>
 
-#define AGENT_INET6_ADDR   "fe80::12e2:d5ff:ff00:1fa"      // micro-ROS agent IPv6 address
-#define AGENT_UDP_PORT     "9999"                          // UDP port agent is listening on; below 10000
-
 #if defined(BUILD_MODULE)
 int main(int argc, char *argv[])
 #else
@@ -21,53 +18,30 @@ int uros_6lowpan_main(int argc, char* argv[])
 {
     char buffer[256]; // Buffer to save configuration commands.
 
-    int device_id;
-    if(2 > argc )
+    if(3 > argc || 0 == atoi(argv[2]))
     {
-        printf("usage: program [-h | --help] s/p ]\n       s - subscriber \n       p - publisher \n");     
+        printf("usage: program [-h | --help] | ip port sub/pub [<max_topics>]\n");
         return 0;
     }
-    strcpy(buffer, "y");
-    if(!strcmp(argv[1],"p")) {
-        device_id = 0;
-    }
-    else if(!strcmp(argv[1],"s")){
-        device_id = 1;
-    }
-
-    // if(3 > argc )
-    // {
-    //     printf("usage: program [-h | --help] | ip port sub/pub [<max_topics>]\n");
-    //     return 0;
-    // }
     //Check if the IP and the port are correct
-    // if(strlen(argv[1])>39 || strlen(argv[2])>4){
-    //     printf("Error: IP or port size incorrect \r\n");
-    //     return 0;
-    // }
-
-    // if(!strcmp(argv[1],"pub")) {
-    //     device_id = 0;
-    // }
-    // else if(!strcmp(argv[1],"sub")){
-    //     device_id = 1;
-    // }
+    if(strlen(argv[1])>39 || strlen(argv[2])>4){
+        printf("Error: IP or port size incorrect \r\n");
+        return 0;
+    }
 
     //6lowpan configuration process
-    // printf("Do you want to configure the 6lowpan network? (Y/N)\r\n");
-    // memset(buffer,0,sizeof(buffer));
-    // scanf("%2s", buffer);
+    printf("Do you want to configure the 6lowpan network? (Y/N)\r\n");
+    memset(buffer,0,sizeof(buffer));
+    scanf("%2s", buffer);
     if(!strcmp(buffer,"y")){
         system("ifdown wpan0"); // Is necessary to bring down the network to configure.
         system("i8sak wpan0 startpan cd:ab"); //Set the radio as an endpoint.
         // system("i8sak set chan 26"); //Set the radio channel.
         system("i8sak set chan 11"); //Set the radio channel.
         system("i8sak set panid cd:ab"); //Set network PAN ID.
-        // sprintf(buffer,"i8sak set saddr 42:%02x",CONFIG_UROS_6LOWPAN_EXAMPLE_ID); // Set the short address of the radio
-        sprintf(buffer,"i8sak set saddr 42:%02x",device_id); // Set the short address of the radio
+        sprintf(buffer,"i8sak set saddr 42:%02x",CONFIG_UROS_6LOWPAN_EXAMPLE_ID); // Set the short address of the radio
         system(buffer);
-        // sprintf(buffer, "i8sak set eaddr 00:fa:de:00:de:ad:be:%02x", CONFIG_UROS_6LOWPAN_EXAMPLE_ID); // TODO: This won't work on the lastest version of NuttX
-        sprintf(buffer, "i8sak set eaddr 00:fa:de:00:de:ad:be:%02x", device_id); // TODO: This won't work on the lastest version of NuttX
+        sprintf(buffer, "i8sak set eaddr 00:fa:de:00:de:ad:be:%02x", CONFIG_UROS_6LOWPAN_EXAMPLE_ID); // TODO: This won't work on the lastest version of NuttX
         system(buffer);
         system("i8sak acceptassoc");
         system("ifup wpan0"); // Bring up the network.
@@ -77,17 +51,36 @@ int uros_6lowpan_main(int argc, char* argv[])
         system("cat proc/net/wpan0");
         //6lowpan configuration finished
     }
+    // if(!strcmp(buffer,"y")){
+    //     system("ifdown wpan0"); // Is necessary to bring down the network to configure.
+    //     // system("i8sak wpan0 startpan cd:ab"); //Set the radio as an endpoint.
+    //     // system("i8sak set chan 26"); //Set the radio channel.
+    //     system("i8sak set chan 11"); //Set the radio channel.
+    //     system("i8sak set panid cd:ab"); //Set network PAN ID.
+    //     sprintf(buffer,"i8sak set saddr 42:%02x",CONFIG_UROS_6LOWPAN_EXAMPLE_ID); // Set the short address of the radio
+    //     system(buffer);
+    //     sprintf(buffer, "i8sak set eaddr 00:fa:de:00:de:ad:be:%02x", CONFIG_UROS_6LOWPAN_EXAMPLE_ID); // TODO: This won't work on the lastest version of NuttX
+    //     system(buffer);
+    //     // system("i8sak acceptassoc");
+    //     system("i8sak assoc");
+    //     system("ifup wpan0"); // Bring up the network.
+    //     system("mount -t procfs /proc");// Mount the proc file system to check the connection data.
 
-    // //Waiting for a user input to continue.
-    // printf("Press any key to continue or 'q' to exit \r\n");
-    // // scanf("%s",aux_buffer);
-    // scanf("%s", buffer);
-    // // char aux = getchar();
-    // if (buffer[0] == 'q')
-    // {
-    //     printf("Closing on wpan configuration \r\n");
-    //     return 0;
+    //     printf("Connection data\r\n");
+    //     system("cat proc/net/wpan0");
+    //     //6lowpan configuration finished
     // }
+
+    //Waiting for a user input to continue.
+    printf("Press any key to continue or 'q' to exit \r\n");
+    // scanf("%s",aux_buffer);
+    scanf("%s", buffer);
+    // char aux = getchar();
+    if (buffer[0] == 'q')
+    {
+        printf("Closing on wpan configuration \r\n");
+        return 0;
+    }
 
     rcl_ret_t rv;
 
@@ -100,8 +93,7 @@ int uros_6lowpan_main(int argc, char* argv[])
     }
     // Set the IP and the port of the Agent
     rmw_init_options_t* rmw_options = rcl_init_options_get_rmw_init_options(&options);
-    // rmw_uros_options_set_udp_address(argv[1], argv[2], rmw_options);
-    rmw_uros_options_set_udp_address(AGENT_INET6_ADDR, AGENT_UDP_PORT, rmw_options);
+    rmw_uros_options_set_udp_address(argv[1], argv[2], rmw_options);
 
     rcl_context_t context = rcl_get_zero_initialized_context();
     rv = rcl_init(0, NULL, &options, &context);
@@ -110,8 +102,7 @@ int uros_6lowpan_main(int argc, char* argv[])
         return 1;
     }
 
-    // if(!strcmp(argv[3],"pub")){
-    if(!strcmp(argv[1],"p")) {
+    if(!strcmp(argv[3],"pub")){
         printf("micro-ROS Publisher\r\n");
 
         rcl_node_options_t node_ops = rcl_node_get_default_options();
@@ -128,11 +119,12 @@ int uros_6lowpan_main(int argc, char* argv[])
             printf("Publisher initialization error: %s\n", rcl_get_error_string().str);
             return 1;
         }
-        printf(" pub loop \n");
+printf(" pub_main \n");
         std_msgs__msg__Int32 msg;
-        const int num_msg = 1000;
+        const int num_msg = 10;
         msg.data = 0;
         usleep(500000); // As we are sending low number mensajes we need to wait discovery of the subscriber. (Do not have a notification on discovery)
+        // usleep(3000000); // As we are sending low number mensajes we need to wait discovery of the subscriber. (Do not have a notification on discovery)
         do {
             rv = rcl_publish(&publisher, (const void*)&msg, NULL);
             if (RCL_RET_OK == rv )
@@ -147,8 +139,7 @@ int uros_6lowpan_main(int argc, char* argv[])
         rv = rcl_node_fini(&node);
 
     }
-    // else if(!strcmp(argv[3],"sub")){
-    else if(!strcmp(argv[1],"s")) {
+    else if(!strcmp(argv[3],"sub")){
         printf("micro-ROS subscriber \r\n");
 
         rcl_node_options_t node_ops = rcl_node_get_default_options();
@@ -189,7 +180,6 @@ int uros_6lowpan_main(int argc, char* argv[])
             printf("Wait set add subscription error: %s\n", rcl_get_error_string().str);
             return 1;
         }
-        printf(" subscriber loop \n");
 
         void* msg = rcl_get_default_allocator().zero_allocate(sizeof(std_msgs__msg__Int32), 1, rcl_get_default_allocator().state);
         do {
@@ -203,7 +193,7 @@ int uros_6lowpan_main(int argc, char* argv[])
                 }
             }
         } while ( RCL_RET_OK == rv || RCL_RET_SUBSCRIPTION_TAKE_FAILED == rv);
-        printf("[rcl_take] rv = %d \n", rv);
+
         rv = rcl_subscription_fini(&subscription, &node);
         rv = rcl_node_fini(&node);   
     }

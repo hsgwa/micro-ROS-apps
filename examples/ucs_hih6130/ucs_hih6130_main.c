@@ -15,6 +15,27 @@
 #include "init_hih_6lowpan.h"
 #include "hih6130.h"
 
+#define LED_HEARTBEAT					(0x00)
+
+static void led_toggle(void) {
+	static int status = 0;
+	static int half_seconds = 0;
+
+	if (half_seconds == 2) {
+		half_seconds = 0;
+		if (status) {
+			status = 0;
+  			board_autoled_off(LED_HEARTBEAT);
+		} else {
+			status = 1;
+  			board_autoled_on(LED_HEARTBEAT);
+		}
+	}
+
+	half_seconds++;
+}
+
+
 #if defined(BUILD_MODULE)
 int main(int argc, char *argv[])
 #else
@@ -95,8 +116,9 @@ int ucs_hih6130_main(int argc, char* argv[])
     printf(" HIH6130 pub_main \n");
 	demo_msgs__msg__DemoHih6130 msg;
 	msg.heartbeats = 0;
-    // usleep(500000); // As we are sending low number mensajes we need to wait discovery of the subscriber. (Do not have a notification on discovery)
     do {
+		int i;
+
         //Read sensor sampl
         read(fd_temp, &sample, sizeof(uint32_t));
         msg.temp = sample.temp;                
@@ -106,7 +128,11 @@ int ucs_hih6130_main(int argc, char* argv[])
         if (RCL_RET_OK == rv )
         {
             printf("Sent: Temperature %d, Humidity %d  \n", msg.temp, msg.hum);
-            usleep(1000000);
+    	    led_toggle();
+	        for (i = 0; i < 50; i++) { 
+			    usleep(10000);
+	        }
+
         }
     } while (RCL_RET_OK == rv);
 

@@ -1,9 +1,9 @@
 config UCS_EFFECTOR_EXAMPLE
-	bool "UCS demo - microROS EFFECTOR Subscriber over 6LoWPAN"
+	bool "UCS - microROS EFFECTOR Subscriber over 6LoWPAN"
 	default n
 	depends on UROS
 	---help---
-		Enable the effector subscriber example over 6LoWPAN radio communication
+		Enable the uROS finala effector subscriber over 6LoWPAN radio communication
 
 if UCS_EFFECTOR_EXAMPLE
 

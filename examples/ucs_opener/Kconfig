@@ -1,9 +1,9 @@
 config UCS_OPENER_EXAMPLE
-	bool "UCS demo - microROS OPENER Subcriber over 6LoWPAN"
+	bool "UCS - microROS OPENER Subcriber over 6LoWPAN"
 	default n
 	depends on UROS
 	---help---
-		Enable the opener example over 6LoWPAN radio communication
+		Enable the uROS door opener subscriber over 6LoWPAN radio communication
 
 if UCS_OPENER_EXAMPLE
 

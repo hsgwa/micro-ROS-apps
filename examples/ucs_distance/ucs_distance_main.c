@@ -51,24 +51,6 @@ static void led_toggle(void) {
 	half_seconds++;
 }
 
-static void led_sig(int tt)
-{
-    int i;
-    int j;
-
-    for(j = 0; j < 5; j++) {
-  	board_autoled_on(LED_HEARTBEAT);
-	    for (i = 0; i < 10; i++) { 
-		    usleep(1000);
-	    }
-    }
-    for(j = 0; j < tt; j++) {
-  	    board_autoled_off(LED_HEARTBEAT);
-	    for (i = 0; i < 10; i++) { 
-		    usleep(1000);
-	    }
-    }
-}
 static int read_all(int fd, char *data, size_t size)
 {
 	int readd = 0;
