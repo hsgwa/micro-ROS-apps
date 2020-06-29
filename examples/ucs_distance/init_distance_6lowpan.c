@@ -8,6 +8,9 @@
 
 int init_distance_6lowpan(void)
 {
+// When running on nsh prompt
+#if (!defined(CONFIG_FS_ROMFS) || !defined(CONFIG_NSH_ROMFSETC))
+
     // //6lowpan configuration process
     char buffer[256]; 
     system("ifdown wpan0"); // Is necessary to bring down the network to configure.
@@ -39,6 +42,7 @@ int init_distance_6lowpan(void)
     system("mount -t procfs /proc");// Mount the proc file system to check the connection data.
     printf("Connection data\r\n");
     system("cat proc/net/wpan0");
+#endif
 
     return 0;
 }
