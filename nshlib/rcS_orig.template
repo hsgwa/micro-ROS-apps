@@ -1,0 +1,3 @@
+mount -t procfs /proc
+kobuki &
+
