@@ -84,15 +84,17 @@ int ucs_effector_main(int argc, char* argv[])
     ctl_st.lamp = OFF;
     ctl_st.pstr = &invalid_str;
 
-    // Initialize 6lowpan
-    init_effector_6lowpan();
-
     // Define agent's udp port and IPv6 address, then uros node and topic names. 
     strcpy(udp_port, EFFECTOR_AGENT_UDP_PORT);
     strcpy(inet6_address, EFFECTOR_AGENT_INET6_ADDR);
     strcpy(node_name, EFFECTOR_NODE);
     strcpy(topic_name, EFFECTOR_TOPIC);
+    
+#if (!defined(CONFIG_FS_ROMFS) || !defined(CONFIG_NSH_ROMFSETC))
     printf("device ID - %d, nOde - %s, topic - %s \n", EFFECTOR_PAN_ID, node_name, topic_name );
+    // Initialize 6lowpan when running on nsh prompt
+    init_effector_6lowpan();
+#endif
 
     rcl_ret_t rv;
 

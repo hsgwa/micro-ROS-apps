@@ -1,5 +1,5 @@
-#ifndef __UCS_HIH6130_HIH6130_H__
-#define __UCS_HIH6130_HIH6130_H__
+#ifndef __UCS_HIH6130_HUMIDITY_H__
+#define __UCS_HIH6130_HUMIDITY_H__
 
 
 
@@ -9,5 +9,5 @@
 #define HIH_TOPIC               "temp_humidity"                     // topic name max 39 char
 
 
-#endif /*  __UCS_HIH6130_HIH6130_H__ */
+#endif /*  __UCS_HIH6130_HUMIDITY_H__ */
 

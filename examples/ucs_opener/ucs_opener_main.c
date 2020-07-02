@@ -117,7 +117,12 @@ int ucs_opener_main(int argc, char* argv[])
     strcpy(inet6_address, OPENER_AGENT_INET6_ADDR);
     strcpy(node_name, OPENER_NODE);
     strcpy(topic_name, OPENER_TOPIC);
+    
+#if (!defined(CONFIG_FS_ROMFS) || !defined(CONFIG_NSH_ROMFSETC))
     printf("device ID - %d, nOde - %s, topic - %s \n", OPENER_DEVICE_ID, node_name, topic_name );
+    // Initialize 6lowpan when running on nsh prompt
+    init_opener_6lowpan();
+#endif
 
     rcl_ret_t rv;
 

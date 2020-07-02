@@ -1,9 +1,9 @@
 config UCS_SUB_EXAMPLE
-	bool "UCS - microROS Distance Subscriber over 6LoWPAN"
+	bool "UCS - microROS TFMINI Subscriber over 6LoWPAN"
 	default n
 	depends on UROS
 	---help---
-		Enable the ucs test subscriber over 6LoWPAN radio communication
+		Enable the ucs sensor test subscriber over 6LoWPAN radio communication
 
 if UCS_SUB_EXAMPLE
 
@@ -20,7 +20,7 @@ config UCS_SUB_EXAMPLE_PROGNAME
  	default 1
 	depends on UCS_SUB_EXAMPLE
 	---help---
-		Set 1 to use ucs demo distance topic..
+		Set 1 to use ucs demo distance topic.
 
 endif
 

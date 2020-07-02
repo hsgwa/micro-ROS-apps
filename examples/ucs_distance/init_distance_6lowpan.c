@@ -5,7 +5,6 @@
 #include "init_distance_6lowpan.h"
 
 
-
 int init_distance_6lowpan(void)
 {
 // When running on nsh prompt

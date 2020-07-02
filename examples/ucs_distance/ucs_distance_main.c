@@ -37,7 +37,7 @@ static void led_toggle(void) {
 	static int status = 0;
 	static int half_seconds = 0;
 
-	if (half_seconds == 5) {
+	if (half_seconds == 10) {
 		half_seconds = 0;
 		if (status) {
 			status = 0;
@@ -146,7 +146,6 @@ int ucs_distance_main(int argc, char* argv[])
 		printf("Could not open %s\n", OLIMEX_TFMINI);
 		goto end;
 	}
-
      if (synchronize(fd, &tmf)) {
 		printf("Could not synchronize %s\n", OLIMEX_TFMINI);
 		goto end;
@@ -208,7 +207,7 @@ int ucs_distance_main(int argc, char* argv[])
     printf(" Distance pub_main \n");
     std_msgs__msg__Int32 msg;
     do {
-		int i;
+    	int num = 100;
 
     	while (synchronize(fd, &tmf)) {
 			printf("Error during synchro \n");
@@ -222,11 +221,10 @@ int ucs_distance_main(int argc, char* argv[])
         {
             printf("TFMINI sent: '%i'\n", msg.data);
         }
-		// rclc_spin_node_once(node, 1000);
     	led_toggle();
-	    for (i = 0; i < 10; i++) { 
-			usleep(10000);
-	    }
+		// num millisec
+		usleep(1000 * num);
+
     } while (RCL_RET_OK == rv);
     printf("[rcl_publish]rv %d \n", rv);
 

@@ -13,7 +13,7 @@
 #include <demo_msgs/msg/demo_hih6130.h>
 
 #include "init_hih_6lowpan.h"
-#include "hih6130.h"
+#include "humidity.h"
 
 #define LED_HEARTBEAT					(0x00)
 
@@ -21,7 +21,7 @@ static void led_toggle(void) {
 	static int status = 0;
 	static int half_seconds = 0;
 
-	if (half_seconds == 2) {
+	if (half_seconds == 10) {
 		half_seconds = 0;
 		if (status) {
 			status = 0;
@@ -65,15 +65,17 @@ int ucs_hih6130_main(int argc, char* argv[])
         return 0;
     }
 
-    // Initialize 6lowpan
-    init_hih_6lowpan();
-
     // Define agent's udp port and IPv6 address, then uros node and topic names. 
     strcpy(udp_port, HIH_AGENT_UDP_PORT);
     strcpy(inet6_address, HIH_AGENT_INET6_ADDR);
     strcpy(node_name, HIH_NODE);
     strcpy(topic_name, HIH_TOPIC);
+    
+#if (!defined(CONFIG_FS_ROMFS) || !defined(CONFIG_NSH_ROMFSETC))
     printf("device ID - %d, nOde - %s, topic - %s \n", HIH_DEVICE_ID, node_name, topic_name );
+    // Initialize 6lowpan when running on nsh prompt
+    init_hih_6lowpan();
+#endif
 
     rcl_ret_t rv;
 
@@ -89,6 +91,7 @@ int ucs_hih6130_main(int argc, char* argv[])
     rmw_uros_options_set_udp_address(inet6_address, udp_port, rmw_options);
 
     rcl_context_t context = rcl_get_zero_initialized_context();
+printf(" hih 6 \n");
     rv = rcl_init(0, NULL, &options, &context);
     if (RCL_RET_OK != rv) {
         printf("rcl initialization error: %s\n", rcl_get_error_string().str);
@@ -105,6 +108,7 @@ int ucs_hih6130_main(int argc, char* argv[])
         return 1;
     }
     rcl_publisher_options_t publisher_ops = rcl_publisher_get_default_options();
+printf(" hih 7 \n");
     rcl_publisher_t publisher = rcl_get_zero_initialized_publisher();
     rv = rcl_publisher_init(&publisher, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(demo_msgs, msg, DemoHih6130), topic_name, &publisher_ops);
     if (RCL_RET_OK != rv) {
@@ -117,7 +121,7 @@ int ucs_hih6130_main(int argc, char* argv[])
 	demo_msgs__msg__DemoHih6130 msg;
 	msg.heartbeats = 0;
     do {
-		int i;
+    	int num = 100;
 
         //Read sensor sampl
         read(fd_temp, &sample, sizeof(uint32_t));
@@ -129,10 +133,8 @@ int ucs_hih6130_main(int argc, char* argv[])
         {
             printf("Sent: Temperature %d, Humidity %d  \n", msg.temp, msg.hum);
     	    led_toggle();
-	        for (i = 0; i < 50; i++) { 
-			    usleep(10000);
-	        }
-
+		    // num millisec
+		    usleep(1000 * num);
         }
     } while (RCL_RET_OK == rv);
 
