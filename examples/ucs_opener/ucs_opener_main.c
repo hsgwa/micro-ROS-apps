@@ -109,9 +109,6 @@ int ucs_opener_main(int argc, char* argv[])
     ctl_st.timer = 0;
     ctl_st.pstr = &invalid_str;
 
-    // Initialize 6lowpan
-    init_opener_6lowpan();
-
     // Define agent's udp port and IPv6 address, then uros node and topic names. 
     strcpy(udp_port, OPENER_AGENT_UDP_PORT);
     strcpy(inet6_address, OPENER_AGENT_INET6_ADDR);
