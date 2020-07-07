@@ -15,6 +15,8 @@
 #include "init_opener_6lowpan.h"
 #include "opener.h"
 
+#define LED_HEARTBEAT					(0x00)
+
 struct relay_ctl_stat {
     int timer;
     bool open;
@@ -25,6 +27,24 @@ struct relay_ctl_stat {
 char open_str[] = {"OPEN"};
 char close_str[] = {"CLOSE"};
 char invalid_str[] = {"INVALID"};
+
+static void led_toggle(void) {
+	static int status = 0;
+	static int half_seconds = 0;
+
+	if (half_seconds == 10) {
+		half_seconds = 0;
+		if (status) {
+			status = 0;
+  			board_autoled_off(LED_HEARTBEAT);
+		} else {
+			status = 1;
+  			board_autoled_on(LED_HEARTBEAT);
+		}
+	}
+
+	half_seconds++;
+}
 
 int find_opener_command(int cmd, struct relay_ctl_stat* st)
 {
@@ -186,13 +206,15 @@ int ucs_opener_main(int argc, char* argv[])
     }
 
     printf(" Opener main \n");
-    ioctl(fr0, GPIOC_WRITE, (unsigned long)ON);
-    usleep(1000000);    
-    ioctl(fr0, GPIOC_WRITE, (unsigned long)OFF);
     
     void* msg = rcl_get_default_allocator().zero_allocate(sizeof(std_msgs__msg__Int8), 1, rcl_get_default_allocator().state);
     do {
+        int num = 100;
+
         opener_ctl( fr0, fr1, &ctl_st);
+    	led_toggle();
+		// num millisec
+        usleep(1000*num);
         rv = rcl_wait(&wait_set, 1000000);
         for (size_t i = 0; i < wait_set.size_of_subscriptions; ++i) {
             rv = rcl_take(wait_set.subscriptions[i], msg, NULL, NULL);

@@ -15,6 +15,8 @@
 #include "init_effector_6lowpan.h"
 #include "effector.h"
 
+#define LED_HEARTBEAT					(0x00)
+
 struct effector_ctl_stat {
     bool lamp;
     char* pstr;
@@ -23,6 +25,25 @@ struct effector_ctl_stat {
 char turn_on_str[] = {"TURN_ON"};
 char turn_off_str[] = {"TURN_OFF"};
 char invalid_str[] = {"INVALID"};
+
+static void led_toggle(void) {
+	static int status = 0;
+	static int half_seconds = 0;
+
+	if (half_seconds == 10) {
+		half_seconds = 0;
+		if (status) {
+			status = 0;
+  			board_autoled_off(LED_HEARTBEAT);
+		} else {
+			status = 1;
+  			board_autoled_on(LED_HEARTBEAT);
+		}
+	}
+
+	half_seconds++;
+}
+
 
 int find_effector_command(int cmd, struct effector_ctl_stat* st)
 {
@@ -161,13 +182,15 @@ int ucs_effector_main(int argc, char* argv[])
     }
 
     printf(" Effector main \n");
-    // ioctl(fr0, GPIOC_WRITE, (unsigned long)ON);
-    // usleep(1000000);    
-    // ioctl(fr0, GPIOC_WRITE, (unsigned long)OFF);
     
     void* msg = rcl_get_default_allocator().zero_allocate(sizeof(std_msgs__msg__Int8), 1, rcl_get_default_allocator().state);
     do {
+        int num = 100;
+
         effector_ctl( fr0, &ctl_st);
+    	led_toggle();
+		// num millisec
+        usleep(1000*num);
         rv = rcl_wait(&wait_set, 1000000);
         for (size_t i = 0; i < wait_set.size_of_subscriptions; ++i) {
             rv = rcl_take(wait_set.subscriptions[i], msg, NULL, NULL);
