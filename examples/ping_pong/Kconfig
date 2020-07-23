@@ -1,0 +1,26 @@
+config UROS_EXAMPLES_PINGPONG
+	bool "microROS PingPong"
+	default n
+	depends on UROS
+	---help---
+		Enable the publisher uROS example
+
+if UROS_EXAMPLES_PUBLISHER
+
+config UROS_EXAMPLES_PUBLISHER_PROGNAME
+	string "Program name"
+	default "ping_pong"
+	depends on BUILD_KERNEL
+	---help---
+		This is the name of the program that will be use when the NSH ELF
+		program is installed.
+
+#config UROS_EXAMPLES_PUBLISHER_PRIORITY
+#	int "PingPong task priority"
+#	default 100
+#
+#config UROS_EXAMPLES_PUBLISHER_STACKSIZE
+#	int "PingPong stack size"
+#	default 2048
+
+endif
